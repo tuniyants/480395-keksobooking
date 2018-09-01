@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Эрнест Мельников](https://up.htmlacademy.ru/javascript/15/user/480395).
-* Наставник: `Неизвестно`.
+* Наставник: [Лев Балагуров](https://htmlacademy.ru/profile/id7786).
 
 ---
 
