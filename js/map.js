@@ -25,17 +25,19 @@ var titles = [
   'Неуютное бунгало по колено в воде'
 ];
 
-var types = [
-  'flat',
-  'palace',
-  'house',
-  'bungalo'
-];
+var types = {
+  'flat': 'Квартира',
+  'palace': 'Дворец',
+  'house': 'Дом',
+  'bungalo': 'Бунгало'
+};
 
-// 'flat': 'Квартира',
-// 'palace': 'Дворец',
-// 'house': 'Дом',
-// 'bungalo': 'Бунгало'
+var titlesPerTypes = {
+  'flat': [titles[0], titles[1]],
+  'palace': [titles[2], titles[3]],
+  'house': [titles[4], titles[5]],
+  'bungalo': [titles[6], titles[7]]
+};
 
 var checkIns = [
   '12:00',
