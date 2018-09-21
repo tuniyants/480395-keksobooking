@@ -175,7 +175,7 @@ var cardsFragment = document.createDocumentFragment();
 var renderCardFromTemplate = function (cardData, cardTemplate) {
   var cardElement = cardTemplate.cloneNode(true);
   /* Заголовок */
-  var accommodationTitle = cardElement.querySelector('.popup__title')
+  var accommodationTitle = cardElement.querySelector('.popup__title');
   accommodationTitle.textContent = cardData.offer.title;
   /* Адрес */
   var accommodationAddress = cardElement.querySelector('.popup__text--address');
