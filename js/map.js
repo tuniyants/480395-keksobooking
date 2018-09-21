@@ -2,6 +2,7 @@
 
 var PIN_WIDTH = 62;
 var MAP_WIDTH = 1200;
+var OBJECTS_COUNT = 8;
 
 var avatars = [
   'img/avatars/user01.png',
@@ -30,13 +31,6 @@ var types = {
   'palace': 'Дворец',
   'house': 'Дом',
   'bungalo': 'Бунгало'
-};
-
-var titlesPerTypes = {
-  'flat': [titles[0], titles[1]],
-  'palace': [titles[2], titles[3]],
-  'house': [titles[4], titles[5]],
-  'bungalo': [titles[6], titles[7]]
 };
 
 var checkIns = [
@@ -107,7 +101,7 @@ var pickRandomItems = function (array) {
 var accommodationsList = [];
 
 /* Генерирую объекты жилья с тестовыми данными и вставляю в массив */
-for (var i = 0; i < 8; i++) {
+for (var i = 0; i < OBJECTS_COUNT; i++) {
   var randomPositionX = getRandomInRange(PIN_WIDTH / 2, MAP_WIDTH - PIN_WIDTH / 2);
   var randomPositionY = getRandomInRange(130, 630);
   var newAccommodation = {
@@ -180,28 +174,53 @@ var cardsFragment = document.createDocumentFragment();
 /* Генерирую карточки */
 var renderCardFromTemplate = function (cardData, cardTemplate) {
   var cardElement = cardTemplate.cloneNode(true);
-  cardElement.querySelector('.popup__title').textContent = cardData.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = cardData.offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
-  cardElement.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests + ' гостей';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + cardData.offer.checkIn + ', выезд до ' + cardData.offer.checkOut;
-  cardElement.querySelector('.popup__description').textContent = cardData.offer.description;
-  cardElement.querySelector('.popup__avatar').src = cardData.author.avatar;
+  /* Заголовок */
+  var accommodationTitle = cardElement.querySelector('.popup__title')
+  accommodationTitle.textContent = cardData.offer.title;
+  /* Адрес */
+  var accommodationAddress = cardElement.querySelector('.popup__text--address');
+  accommodationAddress.textContent = cardData.offer.address;
+  /* Стоимость */
+  var accommodationPrice = cardElement.querySelector('.popup__text--price');
+  accommodationPrice.textContent = cardData.offer.price + '₽/ночь';
+  /* Количество комант и гостей */
+  var accommodationCapacity = cardElement.querySelector('.popup__text--capacity');
+  accommodationCapacity.textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests + ' гостей';
+  /* Время заезда и выезда */
+  var accommodationTime = cardElement.querySelector('.popup__text--time');
+  accommodationTime.textContent = 'Заезд после ' + cardData.offer.checkIn + ', выезд до ' + cardData.offer.checkOut;
+  /* Описание */
+  var accommodationDescription = cardElement.querySelector('.popup__description');
+  accommodationDescription.textContent = cardData.offer.description;
+  /* Аватарка */
+  var userAvatar = cardElement.querySelector('.popup__avatar');
+  userAvatar.src = cardData.author.avatar;
   /* Тип жилья */
-  //
-  /* Конец типа жилья */
+  var valuesOfTypes = Object.values(types);
+  for (var v = 0; v < valuesOfTypes.length; v++) {
+    if (cardElement.querySelector('.popup__title').textContent.toUpperCase().indexOf(valuesOfTypes[v].toUpperCase()) !== -1) {
+      cardElement.querySelector('.popup__type').textContent = valuesOfTypes[v];
+      break;
+    }
+  }
   /* Фичи */
-  // var selectedFeatures = pickRandomItems(cardData.offer.features);
-  // var allFeatures = document.querySelectorAll('.popup__feature');
-  // for (var f = 0; f < allFeatures.length; f++) {
-  //   for (var s = 0; s < selectedFeatures.length; s++) {
-  //     if (f.indexOf(s) !== -1) {
-  //       cardElement.querySelector(f).style.display = 'none';
-  //     }
-  //   }
-  // }
-  /* Конец фичей*/
-  /* Работа с галереей */
+  var selectedFeatures = pickRandomItems(cardData.offer.features);
+  var allFeatures = cardElement.querySelector('.popup__features');
+  for (var f = 0; f < allFeatures.children.length; f++) {
+    var featureElement = allFeatures.children[f];
+    var className = featureElement.className;
+    var isExist = false;
+    for (var s = 0; s < selectedFeatures.length; s++) {
+      if (className.indexOf(selectedFeatures[s]) !== -1) {
+        isExist = true;
+        break;
+      }
+    }
+    if (!isExist) {
+      featureElement.style.display = 'none';
+    }
+  }
+  /* Галерея */
   var photoPack = shuffleArray(cardData.offer.photos); // Перемешиваю галерею фотографий
   cardElement.querySelector('.popup__photos').innerHTML = ''; // Очищаю контейнер с галереей от потомков (но так делать нехорошо)
   for (var p = 0; p < cardData.offer.photos.length; p++) {
