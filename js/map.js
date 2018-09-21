@@ -60,7 +60,7 @@ var features = [
   'conditioner'
 ];
 
-var photos = [
+var gallery = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
@@ -118,14 +118,14 @@ for (var i = 0; i < 8; i++) {
       title: titles[i],
       address: randomPositionX + ', ' + randomPositionY,
       price: getRandomInRange(1000, 1000000),
-      type: 'test',
+      type: types,
       rooms: getRandomInRange(1, 5),
       guests: getRandomInRange(0, 3),
       checkIn: checkIns[getRandomInRange(0, checkIns.length - 1)],
       checkOut: checkOuts[getRandomInRange(0, checkOuts.length - 1)],
-      getFeatures: 'test',
+      features: features,
       description: '',
-      getPhotos: 'test'
+      photos: gallery
     },
     location: {
       x: randomPositionX,
@@ -136,25 +136,28 @@ for (var i = 0; i < 8; i++) {
   accommodationsList.push(newAccommodation);
 }
 
+/* === Метки на карте === */
+
 /* Сохраняю в переменную шаблон с меткой */
 var similarPinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
 
+var pinsFragment = document.createDocumentFragment();
+
 /* Генерирую метки */
-var renderPin = function (pin) {
-  var pinElement = similarPinTemplate.cloneNode(true);
-  pinElement.style = 'left: ' + pin.location.x + 'px; top: ' + pin.location.y + 'px;';
-  pinElement.querySelector('img').src = pin.author.avatar;
-  pinElement.querySelector('img').alt = pin.offer.title;
+var renderPin = function (pinData, pinTemplate) {
+  var pinElement = pinTemplate.cloneNode(true);
+  pinElement.style = 'left: ' + pinData.location.x + 'px; top: ' + pinData.location.y + 'px;';
+  pinElement.querySelector('img').src = pinData.author.avatar;
+  pinElement.querySelector('img').alt = pinData.offer.title;
 
   return pinElement;
 };
 
 /* Сохраняю сгенерированные метки во временную память */
-var fragment = document.createDocumentFragment();
 for (var j = 0; j < accommodationsList.length; j++) {
-  fragment.appendChild(renderPin(accommodationsList[j]));
+  pinsFragment.appendChild(renderPin(accommodationsList[j], similarPinTemplate));
 }
 
 /* Переключаю карту из неактивного состояния в активное */
@@ -163,34 +166,63 @@ welcomeMessage.classList.remove('map--faded');
 
 /* Вставляю сгенерированные метки в разметку */
 var pins = document.querySelector('.map__pins');
-pins.appendChild(fragment);
+pins.appendChild(pinsFragment);
+
+/* === Карточки === */
 
 /* Сохраняю в переменную шаблон с карточкой */
 var similarCardTemplate = document.querySelector('#card')
   .content
   .querySelector('.map__card');
 
+var cardsFragment = document.createDocumentFragment();
+
 /* Генерирую карточки */
-var renderCard = function (card) {
-  var cardElement = similarCardTemplate.cloneNode(true);
-  cardElement.querySelector('.popup__title').textContent = card.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-  // cardElement.querySelector('.popup__type').textContent = ;
-  cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkIn + ', выезд до ' + card.offer.checkOut;
-  // add
-  cardElement.querySelector('.popup__description').textContent = card.offer.description;
-  // add
-  cardElement.querySelector('.popup__avatar').src = card.author.avatar;
+var renderCardFromTemplate = function (cardData, cardTemplate) {
+  var cardElement = cardTemplate.cloneNode(true);
+  cardElement.querySelector('.popup__title').textContent = cardData.offer.title;
+  cardElement.querySelector('.popup__text--address').textContent = cardData.offer.address;
+  cardElement.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
+  cardElement.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для ' + cardData.offer.guests + ' гостей';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + cardData.offer.checkIn + ', выезд до ' + cardData.offer.checkOut;
+  cardElement.querySelector('.popup__description').textContent = cardData.offer.description;
+  cardElement.querySelector('.popup__avatar').src = cardData.author.avatar;
+  /* Тип жилья */
+  //
+  /* Конец типа жилья */
+  /* Фичи */
+  // var selectedFeatures = pickRandomItems(cardData.offer.features);
+  // var allFeatures = document.querySelectorAll('.popup__feature');
+  // for (var f = 0; f < allFeatures.length; f++) {
+  //   for (var s = 0; s < selectedFeatures.length; s++) {
+  //     if (f.indexOf(s) !== -1) {
+  //       cardElement.querySelector(f).style.display = 'none';
+  //     }
+  //   }
+  // }
+  /* Конец фичей*/
+  /* Работа с галереей */
+  var photoPack = shuffleArray(cardData.offer.photos); // Перемешиваю галерею фотографий
+  cardElement.querySelector('.popup__photos').innerHTML = ''; // Очищаю контейнер с галереей от потомков (но так делать нехорошо)
+  for (var p = 0; p < cardData.offer.photos.length; p++) {
+    var img = document.createElement('img');
+    img.classList.add('popup__photo');
+    img.width = 45;
+    img.height = 40;
+    img.src = photoPack[p];
+    cardElement.querySelector('.popup__photos').appendChild(img);
+  }
+
   return cardElement;
 };
 
 /* Сохраняю сгенерированные карточки во временную память */
-for (var c = 0; c < accommodationsList.length; c++) {
-  fragment.appendChild(renderCard(accommodationsList[c]));
-}
+// for (var c = 0; c < accommodationsList.length; c++) {
+//   cardsFragment.appendChild(renderCardFromTemplate(accommodationsList[c], similarCardTemplate));
+// }
+
+cardsFragment.appendChild(renderCardFromTemplate(accommodationsList[0], similarCardTemplate));
 
 /* Вставляю сгенерированные карточки в разметку */
 var mapFiltersContainer = document.querySelector('.map__filters-container');
-document.querySelector('.map').insertBefore(fragment, mapFiltersContainer);
+document.querySelector('.map').insertBefore(cardsFragment, mapFiltersContainer);
