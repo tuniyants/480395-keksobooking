@@ -198,7 +198,7 @@ var renderCardFromTemplate = function (cardData, cardTemplate) {
   /* Тип жилья */
   var valuesOfTypes = Object.values(types);
   for (var v = 0; v < valuesOfTypes.length; v++) {
-    if (cardElement.querySelector('.popup__title').textContent.toUpperCase().indexOf(valuesOfTypes[v].toUpperCase()) !== -1) {
+    if (accommodationTitle.textContent.toUpperCase().indexOf(valuesOfTypes[v].toUpperCase()) !== -1) {
       cardElement.querySelector('.popup__type').textContent = valuesOfTypes[v];
       break;
     }
