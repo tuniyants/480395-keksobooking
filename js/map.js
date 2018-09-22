@@ -1,5 +1,7 @@
 'use strict';
 
+/* Тестовый комментарий для старины Трэвиса */
+
 var PIN_WIDTH = 62;
 var MAP_WIDTH = 1200;
 var OBJECTS_COUNT = 8;
